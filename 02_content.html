@@ -1,11 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+    <meta charset="UTF-8">
+    <title>innerHTML vs textContent</title>
+    <style>
+        /* 학습 효과를 높이기 위한 기본 스타일 */
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; }
+        .box { border: 2px solid #ddd; padding: 15px; margin-top: 20px; border-radius: 8px; }
+        .box h3 { margin-top: 0; }
+        code { background-color: #f0f0f0; color: crimson; padding: 2px 4px; border-radius: 4px; font-weight: bold; }
+        #hidden-text-demo span { color: blue; }
+        #hidden-text-demo .hidden { display: none; }
+    </style>
 </head>
 <body>
-  
+
+    <h1>innerHTML vs textContent 보안 및 차이점 비교</h1>
+
+    <div class="box">
+        <h3>1. <code>innerHTML</code> 사용 (위험성)</h3>
+        <div id="inner-html-box"></div>
+    </div>
+
+    <div class="box">
+        <h3>2. <code>textContent</code> 사용 (안전성)</h3>
+        <div id="text-content-box"></div>
+    </div>
+    
+    <div class="box">
+        <h3>3. <code>textContent</code> vs <code>innerText</code> 차이점</h3>
+        <p id="hidden-text-demo">이 문장에는 <span>파란색 글씨</span>와 <span class="hidden">숨겨진 글씨</span>가 있습니다.</p>
+        <p>결과는 개발자 도구(F12)의 콘솔 탭에서 확인하세요.</p>
+    </div>
+
+    <script>
+        /*
+        ==================================================================================
+        🎯 DOM 내용 변경: innerHTML vs textContent
+        ==================================================================================
+        JavaScript로 요소의 내용을 변경할 때, 두 속성의 차이점을 이해하는 것은 '보안'에 매우 중요합니다.
+        💣 innerHTML의 위험성
+        - 기능: 요소 안의 'HTML 코드 자체'를 읽거나 씁니다. 태그를 해석하여 화면에 렌더링합니다.
+        - 문제점: 사용자가 입력한 값을 그대로 innerHTML에 넣으면, 악의적인 스크립트가 담긴
+                  HTML 문자열을 통해 'XSS(Cross-Site Scripting) 공격'에 노출될 수 있습니다.
+                  마치 집 열쇠를 통째로 주는 것처럼 위험할 수 있습니다.
+        🛡️ textContent의 안전성
+        - 기능: 요소 안의 '순수한 텍스트'에만 관여합니다. HTML 태그를 해석하지 않고 그대로 글자로 취급합니다.
+        - 장점: 사용자 입력값을 화면에 표시할 때 사용하면, 스크립트 실행 가능성을 원천적으로 차단하여
+                자동으로 '소독(Sanitize)'하는 효과가 있습니다. 보안상 기본 원칙입니다.
+        */
+
+        // --- 실습 1: 악성 스크립트 문자열을 사용한 비교 ---
+
+        // 공격자가 삽입할 수 있는 악의적인 입력을 가정합니다.
+        // <img src='x'>: 이미지를 로드하려다 실패시킴 -> onerror 이벤트 발생 -> 숨겨둔 스크립트 실행
+        const maliciousInput = '<img src="x" onerror="alert(\'XSS 공격 발생! 사용자의 정보를 탈취할 수 있습니다.\')">';
+
+        // 1. innerHTML을 사용하는 경우
+        const innerBox = document.getElementById('inner-html-box');
+        
+        // 아래 주석을 해제하고 파일을 열면, HTML 문자열이 코드로 해석되어 alert 경고창이 바로 실행됩니다.
+        // innerBox.innerHTML = maliciousInput;
+
+
+        // 2. textContent를 사용하는 경우
+        const textBox = document.getElementById('text-content-box');
+        
+        // 입력된 문자열이 HTML 태그가 아닌, 순수 텍스트로 처리되어 화면에 '<img src...'가 그대로 보입니다.
+        textBox.textContent = maliciousInput;
+
+
+        /*
+        ==================================================================================
+        ✨ Tip: textContent vs innerText
+        ==================================================================================
+        textContent와 유사하게 텍스트만 다루는 innerText 속성도 있습니다.
+        둘의 핵심적인 차이는 'CSS 스타일을 고려하는가' 입니다.
+        */
+        
+        // --- 실습 2: 숨겨진 텍스트를 포함한 요소로 비교 ---
+
+        const demoParagraph = document.getElementById('hidden-text-demo');
+
+        // 1. textContent 결과
+        // CSS에 의해 숨겨진(display: none) 텍스트까지 포함하여, 요소가 가진 모든 텍스트를 가져옵니다.
+        // 성능이 더 빠릅니다.
+        console.log("textContent 결과:", demoParagraph.textContent);
+
+        // 2. innerText 결과
+        // CSS 스타일을 모두 계산한 후, 사용자 눈에 '실제로 보이는' 텍스트만 가져옵니다.
+        // 이 계산 과정 때문에 textContent보다 상대적으로 느립니다.
+        console.log("innerText 결과:", demoParagraph.innerText);
+
+        // 결론: 특별히 사용자에게 보이는 텍스트만 필요한 경우가 아니라면,
+        // 성능과 일관성 면에서 textContent를 사용하는 것이 좋습니다.
+    </script>
+
 </body>
 </html>
