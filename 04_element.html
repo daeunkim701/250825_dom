@@ -1,11 +1,135 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+    <meta charset="UTF-8">
+    <title>요소 추가 및 삭제 실습</title>
+    <style>
+        /* 학습을 돕기 위한 기본 스타일 */
+        body { font-family: sans-serif; padding: 20px; }
+        .container { max-width: 500px; margin: auto; border: 1px solid #ccc; padding: 25px; border-radius: 8px; }
+        .controls { display: flex; gap: 10px; margin-bottom: 20px; }
+        #item-input { flex-grow: 1; padding: 10px; border: 1px solid #ddd; }
+        button { padding: 10px 15px; border: none; color: white; cursor: pointer; border-radius: 5px; }
+        #add-btn { background-color: dodgerblue; }
+        #remove-first-btn { background-color: orange; }
+        #remove-last-btn { background-color: crimson; }
+        #item-list li { padding: 10px; border-bottom: 1px solid #eee; }
+        #item-list li:first-child { font-weight: bold; color: green; }
+        #item-list li:last-child { font-weight: bold; color: red; }
+    </style>
 </head>
 <body>
-  
+
+    <div class="container">
+        <h1>동적 요소 추가 및 삭제</h1>
+        
+        <div class="controls">
+            <input type="text" id="item-input" placeholder="추가할 아이템 내용 입력...">
+            <button id="add-btn">추가</button>
+        </div>
+        
+        <div>
+            <button id="remove-first-btn">첫 아이템 삭제</button>
+            <button id="remove-last-btn">마지막 아이템 삭제</button>
+        </div>
+        
+        <ul id="item-list">
+            <li>(기본 아이템)</li>
+        </ul>
+    </div>
+
+    <script>
+        /*
+        ==================================================================================
+        🎯 DOM 요소 동적 제어 (생성, 추가, 삭제)
+        ==================================================================================
+        
+        JavaScript의 가장 강력한 기능 중 하나는 HTML 문서를 실시간으로 변경하는 것입니다.
+        'createElement'로 새 요소를 만들고, 'appendChild'로 문서에 추가하며,
+        'remove'로 기존 요소를 제거하여 사용자와 상호작용하는 동적인 페이지를 만들 수 있습니다.
+        */
+        
+        // --- 1. 조작에 필요한 HTML 요소들 미리 선택하기 ---
+        const list = document.getElementById('item-list');
+        const itemInput = document.getElementById('item-input');
+        const addBtn = document.getElementById('add-btn');
+        const removeFirstBtn = document.getElementById('remove-first-btn');
+        const removeLastBtn = document.getElementById('remove-last-btn');
+
+        
+        // --- 2. '추가' 버튼에 클릭 이벤트 설정 ---
+        addBtn.addEventListener('click', () => {
+            const newItemText = itemInput.value.trim(); // 입력값의 양쪽 공백 제거
+
+            // 입력값이 비어있지 않은 경우에만 아이템을 추가합니다.
+            if (newItemText !== '') {
+                /*
+                ----------------------------------------------------------------------------------
+                💡 Part 1: document.createElement('태그이름') 으로 요소 생성하기
+                ----------------------------------------------------------------------------------
+                - 메모리상에 지정된 태그(예: 'li', 'div')의 새로운 HTML 요소 객체를 만듭니다.
+                - 이 단계에서는 아직 화면에 보이지 않습니다. (재료만 준비한 상태)
+                */
+                const newLi = document.createElement('li');
+
+                // 생성된 요소에 내용(textContent)을 채워 넣습니다.
+                newLi.textContent = newItemText;
+
+                /*
+                ----------------------------------------------------------------------------------
+                💡 Part 2: 부모요소.appendChild(자식요소) 로 DOM에 추가하기
+                ----------------------------------------------------------------------------------
+                - 생성된 요소(newLi)를 부모 요소(list)의 마지막 자식으로 추가합니다.
+                - 이 코드가 실행되는 순간, 새로운 요소가 화면에 나타납니다. (준비한 재료를 조립)
+                */
+                list.appendChild(newLi);
+
+                // 사용자 편의를 위해 입력창을 비우고 다시 포커스를 줍니다.
+                itemInput.value = '';
+                itemInput.focus();
+            } else {
+                alert('추가할 아이템의 내용을 입력해주세요!');
+            }
+        });
+
+        // 입력창에서 Enter 키를 눌렀을 때도 추가 버튼이 클릭되도록 처리
+        itemInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                addBtn.click();
+            }
+        });
+
+
+        /*
+        ----------------------------------------------------------------------------------
+        💡 Part 3: 요소.remove() 로 DOM에서 삭제하기
+        ----------------------------------------------------------------------------------
+        - 선택된 요소를 DOM 트리에서 완전히 제거합니다.
+        - 사용이 간편하고 직관적입니다.
+        */
+
+        // --- 3. '첫 아이템 삭제' 버튼에 클릭 이벤트 설정 ---
+        removeFirstBtn.addEventListener('click', () => {
+            // list.firstElementChild: list의 첫 번째 자식 요소를 선택합니다.
+            const firstItem = list.firstElementChild;
+            if (firstItem) { // 첫 번째 자식이 존재하면
+                firstItem.remove(); // 제거합니다.
+            } else {
+                alert('삭제할 아이템이 없습니다.');
+            }
+        });
+
+        // --- 4. '마지막 아이템 삭제' 버튼에 클릭 이벤트 설정 ---
+        removeLastBtn.addEventListener('click', () => {
+            // list.lastElementChild: list의 마지막 자식 요소를 선택합니다.
+            const lastItem = list.lastElementChild;
+            if (lastItem) { // 마지막 자식이 존재하면
+                lastItem.remove(); // 제거합니다.
+            } else {
+                alert('삭제할 아이템이 없습니다.');
+            }
+        });
+
+    </script>
 </body>
 </html>
