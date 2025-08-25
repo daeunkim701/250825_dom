@@ -1,11 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+    <meta charset="UTF-8">
+    <title>스타일 및 속성 변경 실습</title>
+    <style>
+        /* 기본 스타일: JavaScript로 변경되기 전의 모습을 정의합니다. */
+        body { font-family: sans-serif; padding: 20px; }
+        .container { border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
+        #text { font-size: 18px; color: black; background-color: #f0f0f0; padding: 10px; transition: all 0.3s; }
+        #link { color: dodgerblue; font-weight: bold; }
+        img { max-width: 200px; border: 1px solid #ddd; margin-top: 10px; }
+        button { padding: 10px 15px; margin-top: 20px; cursor: pointer; }
+    </style>
 </head>
 <body>
-  
+
+    <div class="container">
+        <h1>스타일 및 속성 변경하기</h1>
+        
+        <p id="text">이 문단의 스타일이 변경됩니다.</p>
+        <a id="link" href="#" target="_blank">기존 링크</a>
+        <br>
+        <img id="image" src="https://via.placeholder.com/200x100?text=Before" alt="변경 전 이미지">
+        
+        <hr>
+        <button id="change-btn">변경하기</button>
+    </div>
+
+    <script>
+        /*
+        ==================================================================================
+        🎯 DOM 스타일 및 속성 제어
+        ==================================================================================
+        
+        JavaScript를 사용하면 선택된 HTML 요소의 CSS 스타일을 직접 변경하거나,
+        href, src, class 같은 HTML 속성(Attribute) 값을 동적으로 수정할 수 있습니다.
+        */
+
+        // --- 1. 조작할 HTML 요소 미리 선택하기 ---
+        // 버튼 클릭 시 변경할 대상들을 미리 찾아 변수에 저장해 둡니다.
+        const textElement = document.getElementById('text');
+        const linkElement = document.getElementById('link');
+        const imageElement = document.getElementById('image');
+        const changeButton = document.getElementById('change-btn');
+
+
+        // --- 2. 버튼 클릭 이벤트 설정 ---
+        // '변경하기' 버튼이 클릭되었을 때, 아래 함수 안의 코드들이 실행됩니다.
+        changeButton.addEventListener('click', () => {
+
+            /*
+            ----------------------------------------------------------------------------------
+            💡 Part 1: .style 프로퍼티로 CSS 스타일 변경하기
+            ----------------------------------------------------------------------------------
+            - 사용법: `요소.style.CSS속성 = '값';`
+            - 주의점: CSS 속성 이름이 하이픈(-)으로 연결된 경우(예: background-color),
+                      하이픈을 제거하고 뒷 단어를 대문자로 시작하는 '카멜 케이스(camelCase)'로 변환해야 합니다.
+                      (background-color  ->  backgroundColor)
+            - 동작 원리: 이 코드는 해당 요소에 '인라인 스타일(inline style)'을 직접 추가/수정합니다.
+                        <p id="text" style="color: blue; font-size: 20px;"> 와 같이 변경됩니다.
+            */
+            textElement.style.color = 'white';
+            textElement.style.backgroundColor = 'cornflowerblue';
+            textElement.style.fontSize = '22px';
+            textElement.style.borderRadius = '5px';
+            textElement.style.fontWeight = 'bold';
+
+
+            /*
+            ----------------------------------------------------------------------------------
+            💡 Part 2: setAttribute() 메소드로 HTML 속성 변경하기
+            ----------------------------------------------------------------------------------
+            - 사용법: `요소.setAttribute('속성이름', '새로운 값');`
+            - 특징: href(링크 주소), src(이미지/파일 경로), class, id, disabled 등
+                    HTML 태그가 가질 수 있는 모든 속성을 변경할 수 있어 매우 유용합니다.
+            */
+            // <a> 태그의 href 속성을 네이버 주소로 변경합니다.
+            linkElement.setAttribute('href', 'https://www.naver.com');
+            linkElement.textContent = '네이버로 이동 (주소 변경됨)'; // 사용자에게 알려주기 위해 텍스트도 변경
+
+            // <img> 태그의 src(이미지 경로)와 alt(대체 텍스트) 속성을 변경합니다.
+            imageElement.setAttribute('src', 'https://via.placeholder.com/200x100?text=After');
+            imageElement.setAttribute('alt', '변경 후 이미지');
+
+            // 버튼을 비활성화하여 중복 클릭을 방지합니다.
+            changeButton.setAttribute('disabled', 'true');
+            changeButton.textContent = '변경 완료!';
+        });
+
+    </script>
+
 </body>
 </html>
